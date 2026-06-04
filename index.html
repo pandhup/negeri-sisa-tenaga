@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Di Negeri yang Hidup dari Sisa Tenaga</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1714;
+    --ink-muted: #5a5650;
+    --ink-faint: #9a948e;
+    --paper: #faf8f4;
+    --paper-warm: #f2ede4;
+    --paper-accent: #e8e0d0;
+    --rust: #8b3a1e;
+    --rust-light: #c4622d;
+    --gold: #b5892a;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --body: 'Lora', Georgia, serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 18px;
+    line-height: 1.85;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem 2rem 6rem;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-bg-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--paper-accent) 20%, var(--paper-accent) 80%, transparent);
+    transform: translateX(-50%);
+  }
+
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.8s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 6vw, 5.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    max-width: 720px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1s ease 0.5s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .hero-subtitle {
+    margin-top: 2rem;
+    font-size: 1rem;
+    color: var(--ink-muted);
+    font-style: italic;
+    max-width: 480px;
+    line-height: 1.7;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeUp 0.8s ease 0.9s forwards;
+  }
+
+  .hero-rule {
+    width: 48px;
+    height: 2px;
+    background: var(--rust);
+    margin: 2.5rem auto 0;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1.2s forwards;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1.6s forwards;
+  }
+
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--ink-faint), transparent);
+    animation: scrollLine 2s ease-in-out 2s infinite;
+  }
+
+  .article {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 0 2rem 10rem;
+  }
+
+  .section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .opening { margin-bottom: 4rem; }
+
+  .opening p {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--ink-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .opening p:first-child::first-letter {
+    font-family: var(--serif);
+    font-size: 4.2em;
+    line-height: 0.75;
+    float: left;
+    margin-right: 0.08em;
+    margin-top: 0.1em;
+    color: var(--rust);
+  }
+
+  .pullquote {
+    border-left: 3px solid var(--rust);
+    padding: 1.2rem 0 1.2rem 2rem;
+    margin: 3.5rem 0;
+    position: relative;
+  }
+
+  .pullquote::before {
+    content: '\201C';
+    font-family: var(--serif);
+    font-size: 5rem;
+    line-height: 1;
+    color: var(--paper-accent);
+    position: absolute;
+    left: -0.1em;
+    top: -0.2em;
+  }
+
+  .pullquote p {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .para {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    color: var(--ink-muted);
+    margin-bottom: 2rem;
+  }
+
+  .para strong { color: var(--ink); font-weight: 600; }
+
+  .ornament {
+    text-align: center;
+    margin: 4rem 0;
+    color: var(--ink-faint);
+    font-size: 1.2rem;
+    letter-spacing: 0.5em;
+  }
+
+  .chapter {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+    margin-top: 4rem;
+  }
+
+  .chapter em { font-style: italic; color: var(--rust-light); }
+
+  .callout {
+    background: var(--paper-warm);
+    border: 1px solid var(--paper-accent);
+    padding: 2rem 2.5rem;
+    margin: 3.5rem 0;
+    position: relative;
+  }
+
+  .callout::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--gold);
+  }
+
+  .callout p {
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+    line-height: 1.8;
+    margin-bottom: 0.8rem;
+  }
+
+  .callout p:last-child { margin-bottom: 0; }
+
+  .callout-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .em-line {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--ink);
+    text-align: center;
+    margin: 3.5rem 0;
+    padding: 0 1rem;
+    line-height: 1.6;
+  }
+
+  .echo-list {
+    margin: 2.5rem 0;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .echo-list li {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--ink);
+    padding: 0.6rem 0 0.6rem 1.5rem;
+    border-bottom: 1px solid var(--paper-accent);
+    position: relative;
+  }
+
+  .echo-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background: var(--rust);
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+
+  .closing {
+    padding-top: 4rem;
+    border-top: 1px solid var(--paper-accent);
+    margin-top: 5rem;
+  }
+
+  .closing .final-line {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .closing .final-line em { color: var(--rust); font-style: italic; }
+
+  .colophon {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-top: 4rem;
+    text-align: center;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollLine {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.3); }
+  }
+
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--rust);
+    width: 0%;
+    z-index: 999;
+    transition: width 0.1s linear;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 6rem 1.5rem 4rem; }
+    .article { padding: 0 1.5rem 6rem; }
+    .pullquote { padding-left: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<section class="hero">
+  <div class="hero-bg-line"></div>
+  <div class="hero-label">Sebuah esai — Indonesia, ekonomi, manusia</div>
+  <h1 class="hero-title">Di negeri yang hidup dari <em>sisa tenaga</em></h1>
+  <p class="hero-subtitle">Indonesia tidak pernah benar-benar tidur. Bahkan sebelum matahari sempat menyentuh genteng-genteng rumah, negeri ini sudah bergerak.</p>
+  <div class="hero-rule"></div>
+  <div class="scroll-hint">gulir ke bawah</div>
+</section>
+
+<article class="article">
+
+  <div class="section opening" data-delay="0">
+    <p>Indonesia tidak pernah benar-benar tidur. Bahkan sebelum matahari sempat menyentuh genteng-genteng rumah, negeri ini sudah bergerak dengan napas yang pelan tapi keras kepala. Di dapur sempit kontrakan, seorang ibu menanak nasi sambil menghitung uang belanja yang makin kurus. Di pinggir jalan, pedagang bubur mengaduk panci seperti sedang mengaduk nasib.</p>
+    <p>Di terminal, pekerja menunggu bus dengan mata yang belum selesai bermimpi. Di layar ponsel, seorang pengemudi ojek online menunggu pesanan pertama, sementara cicilan motor, uang sekolah anak, dan tagihan listrik berdiri seperti tiga bayangan di belakang punggungnya.</p>
+    <p>Begitulah ekonomi negeri ini bekerja. Tidak selalu dalam grafik, tidak selalu dalam pidato, tidak selalu dalam angka yang rapi di layar presentasi. Ia bekerja di tubuh manusia. Di kaki yang pegal. Di punggung yang menua lebih cepat. Di tangan yang bau minyak goreng. Di mata kasir minimarket yang tetap harus tersenyum meski gajinya sudah habis sebelum pertengahan bulan.</p>
+  </div>
+
+  <div class="section" data-delay="100">
+    <div class="callout">
+      <div class="callout-label">Di atas kertas</div>
+      <p>Jalan tol bertambah panjang. Mal tetap terang. Aplikasi terus memperbarui tampilan. Kopi susu masih dijual dalam gelas plastik dengan nama-nama yang terdengar modern. Kota-kota tumbuh, gedung naik, baliho berganti, dan bahasa ekonomi selalu menemukan cara untuk terdengar optimistis.</p>
+      <p><strong>Namun di bawah cahaya itu, ada lapisan lain yang lebih sunyi.</strong></p>
+    </div>
+  </div>
+
+  <div class="section" data-delay="0">
+    <p class="para">Ada orang-orang yang bekerja bukan untuk naik kelas, melainkan agar tidak jatuh lebih dalam. Ada keluarga yang bukan sedang mengejar kemakmuran, tetapi sedang mempertahankan agar dapur tetap menyala. Ada anak muda yang bukan tidak punya mimpi, hanya saja mimpinya terlalu sering dikalahkan oleh biaya hidup, syarat pengalaman kerja, harga rumah, dan rasa lelah yang tidak pernah disebut dalam statistik.</p>
+  </div>
+
+  <div class="section" data-delay="0">
+    <div class="pullquote">
+      <p>Kita hidup di negeri di mana kata "bertahan" sering disamarkan menjadi "produktif".</p>
+    </div>
+  </div>
+
+  <div class="section" data-delay="0">
+    <p class="para">Orang yang kehilangan pekerjaan disebut mulai usaha. Orang yang tidak diterima di sektor formal disebut memilih jalan mandiri. Orang yang menjual makanan dari pagi sampai malam disebut pelaku ekonomi kreatif. Ada benarnya, tentu. Rakyat Indonesia memang punya daya hidup yang luar biasa. Mereka bisa mengubah tepung menjadi uang makan, motor menjadi alat produksi, teras rumah menjadi warung, dan ponsel murah menjadi etalase dagangan.</p>
+    <p class="para"><strong>Tapi tidak semua ketangguhan harus dirayakan tanpa rasa bersalah.</strong></p>
+    <p class="para">Sebab kadang yang kita sebut ketangguhan hanyalah nama lain dari keadaan yang tidak memberi pilihan. Orang menjadi kuat bukan karena hidupnya ringan, melainkan karena tidak ada yang datang menolong ketika ia hampir roboh. Orang menjadi kreatif bukan selalu karena waktu luang dan modal cukup, tetapi karena besok pagi anaknya tetap harus makan.</p>
+  </div>
+
+  <div class="section" data-delay="0">
+    <div class="em-line">
+      Di jalanan, ekonomi informal tumbuh seperti rumput di sela beton.<br>
+      Ia tidak direncanakan dengan indah, tapi selalu menemukan celah.
+    </div>
+  </div>
+
+  <div class="section" data-delay="0">
+    <h2 class="chapter">Rumput yang <em>terjepit</em></h2>
+    <p class="para">Gerobak gorengan, warung kopi, laundry kiloan, jasa titip, jualan online, tambal ban, angkringan, seblak, cilok, nasi uduk, es teh besar — semua menjadi bukti bahwa rakyat tidak menunggu sempurnanya kebijakan untuk tetap hidup.</p>
+    <p class="para">Namun rumput yang tumbuh di sela beton tetaplah rumput yang terjepit. Ia bisa hijau, tapi akarnya tidak punya tanah yang dalam.</p>
+    <p class="para">Banyak orang bekerja sangat keras, tetapi tidak menjadi lebih aman. Mereka bangun lebih pagi, tidur lebih malam, mengambil lebih banyak pesanan, membuka lebih banyak cabang kecil, menambah jam kerja, mengurangi istirahat — tetapi hidup tetap berjalan di tempat. Seolah-olah mereka berlari di atas lantai yang diam-diam bergerak mundur.</p>
+  </div>
+
+  <div class="section" data-delay="0">
+    <div class="callout">
+      <div class="callout-label">Rapuhnya jarak antara cukup dan jatuh</div>
+      <p>Harga beras naik sedikit, napas rumah tangga ikut pendek. Harga kontrakan naik, rencana menabung hilang. Anak sakit, tabungan habis. Motor rusak, pekerjaan terganggu.</p>
+      <p>Satu musibah kecil bisa berubah menjadi lubang besar, karena bagi banyak keluarga, jarak antara "cukup" dan "jatuh" hanya setipis satu tagihan.</p>
+    </div>
+  </div>
+
+  <div class="section" data-delay="0">
+    <p class="para">Kelas menengah pun tidak sepenuhnya aman. Mereka mungkin tidak lapar, tetapi gelisah. Mereka punya pekerjaan, tapi takut diganti. Punya gaji, tapi dikejar cicilan. Punya pendidikan, tapi tidak selalu punya jaminan. Mereka membeli kopi bukan karena kaya, melainkan karena butuh merasa hidupnya masih punya jeda.</p>
+    <p class="para">Di kota, orang-orang belajar tersenyum sambil menghitung. Menghitung ongkos. Menghitung diskon. Menghitung promo. Menghitung apakah bulan ini bisa beli sepatu anak atau harus menunggu bulan depan. Menghitung apakah menikah bisa ditunda. Menghitung apakah punya anak adalah keberanian atau kenekatan.</p>
+  </div>
+
+  <div class="section" data-delay="0">
+    <div class="pullquote">
+      <p>Ekonomi, pada akhirnya, bukan cuma soal produksi dan konsumsi. Ia juga soal perasaan.</p>
+    </div>
+    <p class="para">Rasa takut saat membuka dompet. Rasa malu ketika belum bisa membantu orang tua. Rasa bersalah ketika anak meminta sesuatu yang sederhana tapi belum bisa dibeli. Rasa iri yang diam-diam muncul ketika melihat orang lain tampak lebih mudah hidupnya. Rasa hampa ketika kerja keras tidak lagi terasa punya arah.</p>
+  </div>
+
+  <div class="ornament">· · ·</div>
+
+  <div class="section" data-delay="0">
+    <h2 class="chapter">Keindahan yang <em>pahit</em></h2>
+    <p class="para">Tetapi Indonesia bukan hanya cerita muram. Di antara semua tekanan itu, masih ada hal yang sulit dijelaskan oleh teori ekonomi mana pun: kemampuan orang-orang biasa untuk tetap saling menambal.</p>
+    <ul class="echo-list">
+      <li>Tetangga yang meminjamkan beras.</li>
+      <li>Warung yang memperbolehkan utang.</li>
+      <li>Saudara yang mengirim uang meski dirinya sendiri pas-pasan.</li>
+      <li>Ibu yang makan lebih sedikit agar anaknya kenyang.</li>
+      <li>Ayah yang bilang "tidak apa-apa" padahal tubuhnya sudah meminta berhenti.</li>
+    </ul>
+    <p class="para">Ada keindahan yang pahit di sana. Keindahan yang tidak romantis, tapi nyata.</p>
+  </div>
+
+  <div class="section" data-delay="0">
+    <p class="para">Rakyat kecil sering kali tidak punya bahasa besar untuk menjelaskan penderitaannya. Mereka tidak menyebutnya ketimpangan struktural. Mereka tidak menyebutnya stagnasi upah. Mereka tidak menyebutnya rapuhnya perlindungan sosial. Mereka hanya bilang, <em>"lagi susah,"</em> <em>"harga naik semua,"</em> <em>"yang penting anak sekolah,"</em> atau <em>"rejeki sudah ada yang atur."</em></p>
+    <p class="para">Kalimat-kalimat sederhana itu kadang lebih jujur daripada laporan setebal ratusan halaman.</p>
+  </div>
+
+  <div class="section" data-delay="0">
+    <div class="callout">
+      <div class="callout-label">Yang terlalu sering dilupakan</div>
+      <p>Masalahnya, kesabaran rakyat terlalu sering diperlakukan sebagai sumber daya tak terbatas. Seolah-olah selama orang masih bisa berdagang, masih bisa tersenyum, masih bisa mencari akal, maka semuanya baik-baik saja.</p>
+      <p>Padahal kemampuan bertahan bukan bukti bahwa sistem sudah adil. Kadang itu justru bukti bahwa manusia Indonesia terlalu lama dibiarkan menanggung beban yang seharusnya tidak ia pikul sendirian.</p>
+    </div>
+  </div>
+
+  <div class="section" data-delay="0">
+    <p class="para">Negeri ini tidak kekurangan orang rajin. Tidak kekurangan orang pintar. Tidak kekurangan orang yang mau bekerja. Yang sering kurang adalah jalan yang layak untuk membuat kerja keras itu berubah menjadi hidup yang lebih aman.</p>
+  </div>
+
+  <div class="section" data-delay="0">
+    <h2 class="chapter">Empat pertanyaan yang <em>belum terjawab</em></h2>
+    <ul class="echo-list">
+      <li>Apa arti pertumbuhan jika terlalu banyak orang tetap takut sakit?</li>
+      <li>Apa arti pembangunan jika rumah terasa makin jauh dari jangkauan?</li>
+      <li>Apa arti lapangan kerja jika pekerjanya tetap tidak bisa membayangkan masa tua?</li>
+      <li>Apa arti UMKM jika sebagian besarnya hanya menjadi selimut tipis untuk menutupi dinginnya pengangguran?</li>
+    </ul>
+  </div>
+
+  <div class="section" data-delay="0">
+    <p class="para">Kita perlu berhenti memuja penderitaan hanya karena ia tampak gigih. Pedagang kecil tidak butuh hanya dipuji sebagai pahlawan. Pekerja informal tidak cukup diberi slogan kemandirian. Anak muda tidak cukup diminta kreatif tanpa diberi ruang hidup yang masuk akal. Keluarga miskin tidak cukup diberi bantuan sesekali lalu diminta bersyukur seumur hidup.</p>
+    <p class="para">Yang dibutuhkan bukan sekadar tepuk tangan untuk mereka yang bertahan, melainkan sistem yang membuat mereka tidak harus terus-menerus bertahan di tepi jurang.</p>
+  </div>
+
+  <div class="ornament">· · ·</div>
+
+  <div class="section closing" data-delay="0">
+    <div class="final-line">Indonesia hari ini adalah negeri yang penuh tenaga,<br>tapi juga penuh <em>kelelahan.</em></div>
+    <p class="para">Negeri yang kaya kemungkinan, tapi sering miskin kepastian. Negeri yang rakyatnya sanggup membuat kehidupan dari bahan-bahan kecil: tepung, bensin, kuota internet, etalase kaca, kompor gas, dan harapan yang dipaksa tetap menyala.</p>
+    <p class="para">Mungkin di situlah wajah ekonomi kita yang paling jujur terlihat. Bukan di ruang rapat, bukan di panggung debat, bukan di kalimat manis iklan layanan masyarakat. Melainkan di warung kecil saat malam hampir tutup. Di tangan pedagang yang menghitung uang receh. Di pengemudi yang menerima pesanan terakhir meski hujan mulai turun. Di rumah kontrakan yang lampunya masih menyala karena ada anak mengerjakan PR di lantai.</p>
+
+    <div class="pullquote" style="margin-top: 3rem;">
+      <p>Negeri ini masih berjalan. Tapi jangan salah mengira: berjalan bukan berarti tidak terluka.</p>
+    </div>
+
+    <p class="para">Dan jika suatu hari kita ingin benar-benar menyebut Indonesia sebagai negeri yang tumbuh, maka pertumbuhan itu harus terasa sampai ke meja makan orang biasa. Sampai ke rasa aman seorang ibu. Sampai ke masa depan anak muda. Sampai ke tubuh pekerja yang tidak lagi harus mengorbankan seluruh hidupnya hanya untuk sekadar tidak tenggelam.</p>
+
+    <div class="em-line" style="margin-top: 3rem; font-size: 1.4rem;">
+      Karena ekonomi yang baik bukan hanya yang membuat angka naik.<br>
+      Ekonomi yang baik adalah yang membuat manusia bisa bernapas.
+    </div>
+
+    <div class="colophon">
+      selesai · sebuah catatan dari negeri yang keras kepala · Indonesia
+    </div>
+  </div>
+
+</article>
+
+<script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    progress.style.width = (scrolled / total * 100) + '%';
+  });
+
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = parseInt(entry.target.dataset.delay) || 0;
+        setTimeout(() => entry.target.classList.add('visible'), delay);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
